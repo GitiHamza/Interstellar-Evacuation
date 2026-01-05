@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    private static readonly int Upwards = Animator.StringToHash("Upwards");
+
     #region Inspector Variables
     
     [SerializeField] private float _walkingSpeed = 5f;
@@ -69,7 +71,10 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateAnimator()
     {
-        _anim.SetFloat("MovementValue", _moveInput.magnitude); 
+        float movementValue = _moveInput.x > 0 ? _moveInput.x : 0f;
+        _anim.SetFloat("MovementValue", movementValue);
+
+        _anim.SetBool("Upwards", _moveInput.y > 0);
     }
 
     private void FixedUpdate()
@@ -90,6 +95,15 @@ public class PlayerController : MonoBehaviour
         else if (_moveInput.x != 0 || _moveInput.y != 0)
         {
             playerMovementState = PlayerMovementState.Move;
+        }
+
+        if (_moveInput.y > 0)
+        {
+            _anim.SetBool("Upwards", true);
+        }
+        else
+        {
+            _anim.SetBool("Upwards", false);
         }
     }
     #endregion Input Methods
