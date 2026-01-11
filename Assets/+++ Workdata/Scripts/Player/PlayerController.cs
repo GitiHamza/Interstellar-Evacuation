@@ -7,8 +7,9 @@ public class PlayerController : MonoBehaviour
 
     #region Inspector Variables
     
-    [SerializeField] private float _walkingSpeed = 5f;
-    [SerializeField] private float _runningSpeed = 8f;
+    [SerializeField] private int _walkingSpeed = 5;
+    [SerializeField] private int _runningSpeed = 8;
+    
     public PlayerMovementState playerMovementState;
     
     #endregion Inspector Variables
