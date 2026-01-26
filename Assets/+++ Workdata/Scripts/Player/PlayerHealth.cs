@@ -8,9 +8,12 @@ public class PlayerHealth : MonoBehaviour
     public float maxHealth;
     public Image healthBar;
 
+    private PlayerController _playerController;
+
     void Start()
     {
         maxHealth = health;
+        _playerController = GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -23,6 +26,19 @@ public class PlayerHealth : MonoBehaviour
     private void FixedUpdate()
     {
         PlayerDeath();
+    }
+
+    public void TakeDamage(float damage)
+    {
+        if(_playerController != null)
+        {
+            damage = _playerController.ModifyDamage(damage);
+        }
+
+        if (damage <= 0f) return;
+        health -= damage;
+        health =  Mathf.Clamp(health, 0, maxHealth);
+
     }
 
     private void PlayerDeath()

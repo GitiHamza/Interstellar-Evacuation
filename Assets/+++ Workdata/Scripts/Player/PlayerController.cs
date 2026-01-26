@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int _walkingSpeed = 5;
     [SerializeField] private int _runningSpeed = 8;
     
+    public Interactable interactable;
+    
     public PlayerMovementState playerMovementState;
     
     #endregion Inspector Variables
@@ -27,6 +29,14 @@ public class PlayerController : MonoBehaviour
     
     private float _currentSpeed;
     
+    [Header("ShieldManager")]
+    public float shieldDuration;
+    private bool _shieldActive = false;
+    private float _shieldTimer;
+    public GameObject shieldVisual;
+    private bool _hasShieldItem;
+    
+    
     #endregion Private Variables
     
     #region Enums
@@ -43,11 +53,13 @@ public class PlayerController : MonoBehaviour
         _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
         _inputActions = new InputSystem_Actions();
+        interactable = GetComponent<Interactable>();
         
         _currentSpeed = _walkingSpeed;
         _moveAction = _inputActions.Player.Move;
         _attackAction = _inputActions.Player.Attack;
         _guardAction = _inputActions.Player.Guard;
+        
     }
 
     private void OnEnable()
@@ -56,8 +68,7 @@ public class PlayerController : MonoBehaviour
         _moveAction.performed += Move;
         _moveAction.canceled += Move;
         //_attackAction.performed += Attack;
-        //_guardAction.performed += Guard;
-        //_guardAction.canceled += Guard;
+        _guardAction.performed += Guard;
     }
 
     private void OnDisable()
@@ -66,8 +77,7 @@ public class PlayerController : MonoBehaviour
         _moveAction.performed -= Move;
         _moveAction.canceled -= Move;
         //_attackAction.performed -= Attack;
-        //_guardAction.performed -= Guard;
-       // _guardAction.canceled -= Guard;
+        _guardAction.performed -= Guard;
     }
 
     private void UpdateAnimator()
@@ -78,6 +88,17 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Upwards", _moveInput.y > 0);
     }
 
+    private void Update()
+    {
+        if (_shieldActive && shieldDuration > 0f)
+        {
+            _shieldTimer -= Time.deltaTime;
+            if (_shieldTimer <= 0f)
+            {
+                DeactivateShield();
+            }
+        }
+    }
     private void FixedUpdate()
     {
         _rb.linearVelocity = _moveInput * _currentSpeed;
@@ -107,6 +128,55 @@ public class PlayerController : MonoBehaviour
             _anim.SetBool("Upwards", false);
         }
     }
+
+    private void Guard(InputAction.CallbackContext ctx)
+    {
+        if (!_hasShieldItem) return;
+        if (ctx.performed && !_shieldActive)
+        {
+            ActivateShield();
+        }
+        
+    }
+
+    public void ActivateShield()
+    {
+        _shieldActive = true;
+        _shieldTimer = shieldDuration;
+        if(shieldVisual != null) shieldVisual.SetActive(true);
+        Debug.Log("Shield activated");
+    }
+
+    public void DeactivateShield()
+    {
+        _shieldActive = false;
+        if (shieldVisual != null) shieldVisual.SetActive(false);
+        Debug.Log("Shield deactivated");
+    }
     #endregion Input Methods
+
+    #region DamageRegulation
+
+    public float ModifyDamage(float damage)
+    {
+        if (!_shieldActive) return damage;
+        
+        Debug.Log("Damage blocked");
+        if (shieldDuration == 0f) DeactivateShield();
+        return 0f;
+    }
+
+    #endregion
+
+    #region ItemManager
+
+    public void PickupShieldItem()
+    {
+        _hasShieldItem = true;
+        if(shieldVisual != null) shieldVisual.SetActive(false);
+        Debug.Log("Shield picked up");
+    }
+
+    #endregion
 }
 

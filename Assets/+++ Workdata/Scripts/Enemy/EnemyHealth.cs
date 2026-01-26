@@ -9,7 +9,6 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 {
     [SerializeField] private float health;
     [SerializeField] private float maxHealth;
-    [SerializeField] private float speed;
     
     
     public Image healthBar;
