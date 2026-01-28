@@ -38,7 +38,7 @@ public class PlayerFuel : MonoBehaviour
     {
         if (fuel <= 0)
         {
-            Destroy(gameObject);
+           // Destroy(gameObject);
         }
     }
 }

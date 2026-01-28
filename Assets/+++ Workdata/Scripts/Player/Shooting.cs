@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 using UnityEngine;
@@ -7,13 +8,16 @@ public class Shooting : MonoBehaviour
 {
     private Camera _mainCam;
     private Vector3 _mousePos;
-
+    [Header("Normal Projectile")]
     public GameObject _projectile;
     public Transform _projectileTransform;
-
     public float _timeBetweenFiring = 0.5f;
     public float _projectileSpeed = 10f;
-
+    [Header("Super Attack Projectile")]
+    public GameObject _projectileSuper;
+    public Transform _projectileSuperTransform;
+    public float _timeBetweenSuperFiring = 0.5f;
+    public float _projectileSuperSpeed = 10f;
     private bool _canFire = true;
     private float _timer;
 
@@ -36,6 +40,11 @@ public class Shooting : MonoBehaviour
             Shoot();
         }
 
+        if (Input.GetMouseButton(1) && _canFire)
+        {
+            SuperAttack();
+        }
+
         // Cooldown
         if (!_canFire)
         {
@@ -52,5 +61,12 @@ public class Shooting : MonoBehaviour
     {
         _canFire = false;
         Instantiate(_projectile, _projectileTransform.position, Quaternion.identity);
+    }
+
+    private void SuperAttack()
+    {
+        _canFire = false;
+        Instantiate(_projectileSuper, _projectileSuperTransform.position, Quaternion.identity);
+        
     }
 }

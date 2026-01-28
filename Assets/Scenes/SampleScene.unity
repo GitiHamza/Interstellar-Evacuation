@@ -1151,6 +1151,10 @@ MonoBehaviour:
   _projectileTransform: {fileID: 1962523699}
   _timeBetweenFiring: 0.3
   _projectileSpeed: 10
+  _projectileSuper: {fileID: 7610021013460716117, guid: 1ac0fbffad5034444a45f7111e22b5cf, type: 3}
+  _projectileSuperTransform: {fileID: 1962523699}
+  _timeBetweenSuperFiring: 0.5
+  _projectileSuperSpeed: 10
 --- !u!1 &1028836228
 GameObject:
   m_ObjectHideFlags: 0
