@@ -3,6 +3,8 @@ using UnityEngine.Serialization;
 
 public class BulletScript : MonoBehaviour
 {
+    public Transform rotatePoint;
+    private Transform _bullet;
     public LayerMask enemies;
     private Vector3 _mousePos;
     private Camera _mainCam;
@@ -36,10 +38,5 @@ public class BulletScript : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 }

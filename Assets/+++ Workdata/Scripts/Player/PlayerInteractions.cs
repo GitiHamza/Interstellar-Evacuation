@@ -13,7 +13,7 @@ public class PlayerInteractions : MonoBehaviour
     {
         Interactable interactable = collision.GetComponent<Interactable>();
 
-        if (interactable != null)
+        if (interactable != null && collision.gameObject.CompareTag("PickUp"))
         {
             // Optional: nur einmal aufnehmen
             if (interactables.Contains(interactable)) return;
@@ -26,6 +26,11 @@ public class PlayerInteractions : MonoBehaviour
 
             // Falls das Objekt nach Interact zerstört wird
             interactables.Remove(interactable);
+        }
+
+        if (interactable != null)
+        {
+            interactable.OnSelected?.Invoke();
         }
     }
 

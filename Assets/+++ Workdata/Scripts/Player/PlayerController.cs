@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     
     [SerializeField] private int _walkingSpeed = 5;
     [SerializeField] private int _runningSpeed = 8;
+    [Header("Rescue Manager")]
+    public float holdTimeRequired;
     
     public Interactable interactable;
     
@@ -22,6 +24,7 @@ public class PlayerController : MonoBehaviour
     private InputAction _moveAction;
     private InputAction _attackAction;
     private InputAction _guardAction;
+    private InputAction _rescueAction;
     
     public Vector2 _moveInput;
     private Rigidbody2D _rb;
@@ -36,7 +39,9 @@ public class PlayerController : MonoBehaviour
     public GameObject shieldVisual;
     private bool _hasShieldItem;
     
-    
+    [Header("Rescue Manager")]
+    private float rescueHoldTimer = 0f;
+    private bool isHoldingRescue = false;
     #endregion Private Variables
     
     #region Enums
@@ -52,14 +57,19 @@ public class PlayerController : MonoBehaviour
     {
         _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
-        _inputActions = new InputSystem_Actions();
         interactable = GetComponent<Interactable>();
         
+        HardwareInputs();
+    }
+
+    private void HardwareInputs()
+    {
+        _inputActions = new InputSystem_Actions();
         _currentSpeed = _walkingSpeed;
         _moveAction = _inputActions.Player.Move;
         _attackAction = _inputActions.Player.Attack;
         _guardAction = _inputActions.Player.Guard;
-        
+        _rescueAction = _inputActions.Player.Rescue;
     }
 
     private void OnEnable()
@@ -69,6 +79,8 @@ public class PlayerController : MonoBehaviour
         _moveAction.canceled += Move;
         //_attackAction.performed += Attack;
         _guardAction.performed += Guard;
+        _rescueAction.performed += Rescue;
+        _rescueAction.canceled += Rescue;
     }
 
     private void OnDisable()
@@ -78,8 +90,10 @@ public class PlayerController : MonoBehaviour
         _moveAction.canceled -= Move;
         //_attackAction.performed -= Attack;
         _guardAction.performed -= Guard;
+        _rescueAction.performed -= Rescue;
+        _rescueAction.canceled -= Rescue;
     }
-
+    
     private void UpdateAnimator()
     {
         float movementValue = _moveInput.x > 0 ? _moveInput.x : 0f;
@@ -97,6 +111,16 @@ public class PlayerController : MonoBehaviour
             {
                 DeactivateShield();
             }
+        }
+
+        if (!isHoldingRescue) return;
+        
+        rescueHoldTimer += Time.deltaTime;
+        
+        if (rescueHoldTimer >= holdTimeRequired)
+        {
+            isHoldingRescue = false;
+            Debug.Log("Rescue successful");
         }
     }
     private void FixedUpdate()
@@ -137,6 +161,20 @@ public class PlayerController : MonoBehaviour
             ActivateShield();
         }
         
+    }
+
+    private void Rescue(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            isHoldingRescue = true;
+        }
+
+        if (context.canceled)
+        {
+            isHoldingRescue = false;
+            rescueHoldTimer = 0f;
+        }
     }
 
     public void ActivateShield()
